@@ -1,0 +1,19 @@
+scientific_name	translate_to	species
+Crucigenia tetrapedia	Lemmermannia tetrapedia	TRUE
+Emiliania huxleyi	Gephyrocapsa huxleyi	TRUE
+Gonyaulax verior	Sourniaea diacantha	TRUE
+Gymnodinium simplex	Protodinium simplex	TRUE
+Heterocapsa triquetra	Kryptoperidinium triquetrum	TRUE
+Katodinium glaucum	Lebouridinium glaucum	TRUE
+Lingulodinium polyedra	Lingulaulax polyedra	TRUE
+Pleurochrysis	Chrysotila	
+Prorocentrum compressum	Tryblionella compressa	TRUE
+Rhizosolenia setigera pungens	Sundstroemia pungens	TRUE
+Rhizosolenia setigera	Sundstroemia setigera	TRUE
+Desmodesmus armatus var. armatus	Desmodesmus armatus	TRUE
+Entomoneis paludosa var. paludosa	Entomoneis paludosa	TRUE
+Fragilaria capucina var. capucina	Fragilaria capucina	TRUE
+Odontella sinensis	Trieres chinensis	TRUE
+Rhizosolenia setigera f. pungens	Sundstroemia pungens	TRUE
+Volvocales	Chlamydomonadales	
+Pleurochrysis	Chrysotila	

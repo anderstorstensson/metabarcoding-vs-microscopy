@@ -1,0 +1,29 @@
+Supergroup_MB	Division_MB	Class_MB	MB_status	Group_MC	MC_status	Comment
+Stramenopiles	Gyrista	Bacillariophyceae	included	Bacillariophyceae		
+Stramenopiles	Gyrista	Coscinodiscophyceae + Mediophyceae	included	Coscinodiscophyceae + Mediophyceae		
+Stramenopiles	Ochrophyta	Bolidophyceae	excluded			only found in MB
+Archaeplastida	Chlorophyta	Chlorodendrophyceae	included	Chlorodendrophyceae	included	
+Archaeplastida	Chlorophyta	Chlorophyceae	included	Chlorophyceae	included	
+Stramenopiles	Ochrophyta	Chrysophyceae	included	Chrysophyceae	included	
+Archaeplastida	Chlorophyta	Chloropicophyceae	excluded			pico size
+Hacrobia	Haptophyta	Prymnesiophyceae	included	Coccolithophyceae	included	
+Hacrobia	Cryptophyta	Cryptophyceae	included	Cryptophyceae	included	
+Stramenopiles	Ochrophyta	Dictyochophyceae	included	Dictyochophyceae	included	
+Alveolata	Dinoflagellata	Dinophyceae	included	Dinophyceae	included	
+				Euglenophyceae	excluded	not a class in MB (division Discoba, classess Euglenida or Diponema together with non-phototrophs)
+Stramenopiles	Ochrophyta	Eustigmatophyceae	included	Eustigmatophyceae	included	
+				Klebsormidiophyceae	excluded	only found in MC
+Archaeplastida	Chlorophyta	Mamiellophyceae	excluded			pico size
+Archaeplastida	Chlorophyta	Nephroselmidophyceae	excluded	Nephroselmidophyceae	excluded	2 occurence in MC
+Alveolata	Dinoflagellata	Noctilucophyceae	included	Noctilucophyceae	included	
+Hacrobia	Haptophyta	Pavlovophyceae	excluded	Pavlovophyceae	excluded	1 occurence in MC
+Archaeplastida	Chlorophyta	Pedinophyceae	excluded	Pedinophyceae	included	
+Stramenopiles	Ochrophyta	Pelagophyceae	excluded			pico size
+Archaeplastida	Prasinodermophyta	Prasinodermophyceae	excluded	Prasinodermophyceae	included	
+Archaeplastida	Chlorophyta	Pyramimonadophyceae	included	Pyramimonadophyceae	included	
+Stramenopiles	Ochrophyta	Raphidophyceae	included	Raphidophyceae	included	
+Stramenopiles	Ochrophyta	Synurophyceae	excluded	Synurophyceae	included	
+Archaeplastida	Chlorophyta	Trebouxiophyceae	included	Trebouxiophyceae	included	
+Archaeplastida	Chlorophyta	Ulvophyceae	excluded	Ulvophyceae	excluded	not possible to distinguish benthic/pelagic taxa
+Stramenopiles	Ochrophyta	Xanthophyceae	excluded	Xanthophyceae	excluded	1 occurence in MC
+Archaeplastida	Streptophyta	Zygnematophyceae	excluded	Zygnematophyceae	excluded	not possible to distinguish benthic/pelagic taxa

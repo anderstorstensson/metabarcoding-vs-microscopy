@@ -4,7 +4,6 @@
 
 # Session Data files
 .RData
-.RDataTmp
 
 # User-specific files
 .Ruserdata
@@ -39,11 +38,47 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# pkgdown site
-docs/
+# System files
+*.ini
+*.lnk
 
-# translation temp files
-po/*~
+# Data
+data/*.txt
+data/*/*.txt
+data/*/*.fasta
+data/*/*.csv
+data/*/*.xlsx
+data/*/*.tsv
+data/*/*.gz
+data/*/*.png
+data/*/*.pdf
+data/*/*.Rdata
+data/*/*.R
+data/*/*/
+data/shapefiles/
 
-# RStudio Connect folder
-rsconnect/
+# Old code
+code/shark_download/old/
+
+# Docs
+*.html
+*.pdf
+
+# output files
+plots/*.jpg
+plots/*.pdf
+plots/*/*.RData
+plots/*/eps/
+*.png
+*.txt
+*.xcf
+
+# Except
+!data/18S/filtration_info_smhi.txt
+!data/18S/taxa_18S_PR2_5_1_0_SelectedClasses_SpCorrection_20250506.txt
+!data/18S/MC_18S_nanomicrophyto_class_list_20230505.txt
+!data/18S/translations.txt
+!data/18S/Taxa list 20250204.xlsx
+!data/18S/meta_ix.csv
+!data/shark_phytoplankton/algaebase_microscopy_problems.txt
+!data/everything_from_shark/stations_to_extract.txt
