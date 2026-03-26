@@ -135,9 +135,23 @@ plot = ggplot(all_in_one_class, aes(x = fct_reorder(Level, desc(as.numeric(Value
              scales = "free")
   # scale_x_discrete(guide = guide_axis(n.dodge = 2))
 
-ggsave("fig3_number_of_taxa.png", 
+ggsave("fig3_number_of_taxa.png",
        width = 5,
        height = 5,
-       plot = plot, 
-       device = "png", 
+       plot = plot,
+       device = "png",
        path = "plots/microscopy_vs_barcoding/")
+
+ggsave("fig3_number_of_taxa.pdf",
+       width = 5,
+       height = 5,
+       plot = plot,
+       device = "pdf",
+       path = "plots/microscopy_vs_barcoding/pdf")
+
+ggsave("fig3_number_of_taxa.eps",
+       width = 5,
+       height = 5,
+       plot = plot,
+       device = cairo_ps,
+       path = "plots/microscopy_vs_barcoding/eps")

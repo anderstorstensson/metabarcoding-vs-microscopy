@@ -5,7 +5,7 @@ library(cowplot)
 library(phyloseq)
 library(patchwork)
 
-phyloseq_file = 'data/18S/phyloseqs.RData' 
+phyloseq_file = 'data/18S/phyloseqs.RData'
 
 # Load phyloseq objects
 load(phyloseq_file)
@@ -53,7 +53,7 @@ psmelt_abutab = psmelt(phyloseq_abutab_glom) %>%
                    "n" = n()) %>%
   mutate(method = "Utermöhl") %>%
   dplyr::rename(Genus = taxon_genus)
-  
+
 psmelt_seqtab = psmelt(phyloseq_seqtab_glom) %>%
   filter(Genus %in% genus) %>%
   filter(!Abundance == 0) %>%
@@ -69,8 +69,8 @@ psmelt = rbind(psmelt_abutab, psmelt_seqtab)
 # Plots
 
 relative_abundance.p = ggplot(psmelt, aes(x = fct_reorder(Genus, desc(as.numeric(mean))), y = mean, fill = method)) +
-  geom_bar(position="dodge", 
-           stat="identity", 
+  geom_bar(position="dodge",
+           stat="identity",
            color = "black",
            linewidth = 0.25) +
   geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=0,
@@ -85,11 +85,11 @@ relative_abundance.p = ggplot(psmelt, aes(x = fct_reorder(Genus, desc(as.numeric
         strip.text.x = element_blank()) +
   ylab("Relative abundance (%)") +
   xlab("") +
-  scale_fill_manual(values=c('white', '#999999')) 
+  scale_fill_manual(values=c('white', '#999999'))
 
 frequency.p = ggplot(psmelt, aes(x = fct_reorder(Genus, desc(as.numeric(mean))), y = n, fill = method)) +
-  geom_bar(position="dodge", 
-           stat="identity", 
+  geom_bar(position="dodge",
+           stat="identity",
            color = "black",
            linewidth = 0.25) +
   theme_bw() +
@@ -102,7 +102,7 @@ frequency.p = ggplot(psmelt, aes(x = fct_reorder(Genus, desc(as.numeric(mean))),
         strip.text.x = element_blank()) +
   ylab("Frequency of occurrence (n)") +
   xlab("") +
-  scale_fill_manual(values=c('white', '#999999')) 
+  scale_fill_manual(values=c('white', '#999999'))
 
 # Extract the legend from one of the plots
 legend <- get_legend(
@@ -113,22 +113,22 @@ legend <- get_legend(
 
 # Plots in grid
 
-plot = plot_grid(relative_abundance.p, 
-          frequency.p + theme(legend.position = "none"), 
-          legend, 
-          labels = c("a)", "b)"), 
-          label_x = 0.93,
-          label_y = 0.97,
-          ncol = 1,
-          rel_heights = c(1, 1, .1))
+plot = plot_grid(relative_abundance.p,
+                 frequency.p + theme(legend.position = "none"),
+                 legend,
+                 labels = c("a)", "b)"),
+                 label_x = 0.93,
+                 label_y = 0.97,
+                 ncol = 1,
+                 rel_heights = c(1, 1, .1))
 
 # Save plot
 
-ggsave("fig4_top_genera.png", 
+ggsave("fig4_top_genera.png",
        width = 7,
        height = 7,
-       plot = plot, 
-       device = "png", 
+       plot = plot,
+       device = "png",
        path = "plots/microscopy_vs_barcoding/",
        bg = "white")
 
@@ -176,7 +176,7 @@ psmelt_heatmap = psmelt_mb_heatmap %>%
   mutate("Presence_mb" = ifelse(in_mb == "Yes" & in_um != "Yes", "MB only", NA))%>%
   mutate("Presence_um" = ifelse(in_mb != "Yes" & in_um == "Yes", "UM only", NA)) %>%
   mutate(Presence = coalesce(Presence, Presence_mb, Presence_um)) %>%
-  dplyr::select(-Presence_mb, 
+  dplyr::select(-Presence_mb,
                 -Presence_um,
                 -Abundance_mb,
                 -Abundance_um,
@@ -187,7 +187,9 @@ psmelt_heatmap = psmelt_mb_heatmap %>%
   mutate(basin_name = sea_basin) %>%
   mutate(basin_name = dplyr::recode(basin_name, 'Bothnian Bay' = 1, 'Bothnian Sea' = 2, 'Baltic Proper' = 3, 'Kattegat' = 4, 'Skagerrak' = 5)) %>%
   mutate(sample_name = fct_reorder(sample_name, as.Date(sampling_date))) %>%
-  mutate(Genus = factor(Genus))
+  mutate(Genus = factor(Genus)) %>%
+  mutate(Presence = replace_na(Presence, "Not found")) %>%
+  mutate(Presence = factor(Presence, levels = c("MB & UM", "MB only", "UM only", "Not found")))
 
 psmelt_heatmap %>%
   group_by(Presence) %>%
@@ -225,14 +227,14 @@ tot = sum %>%
 psmelt_heatmap = psmelt_heatmap %>%
   left_join(tot) %>%
   mutate(Genus = fct_reorder(Genus, tot, .desc = TRUE))
-  
+
 sum = sum %>%
   left_join(tot) %>%
   mutate(Genus = fct_reorder(Genus, tot, .desc = TRUE)) %>%
   mutate(label = "Sum")
 
 psmelt_heatmap %>%
-  filter(!is.na(Presence)) %>%
+  filter(Presence != "Not found") %>%
   group_by(Presence) %>%
   summarise(n = n()) %>%
   mutate(percent = n/sum(n)*100)
@@ -240,34 +242,40 @@ psmelt_heatmap %>%
 # Plot heatmap
 heatmap <- ggplot(psmelt_heatmap, aes(Genus, sample_name, label = season)) +
   geom_tile(aes(fill = Presence)) +
-  geom_vline(xintercept = seq(0.5, nlevels(psmelt_heatmap$Genus) + 0.5), color = "black", linetype = "solid", linewidth = .1) +  # Add vertical lines
+  geom_vline(xintercept = seq(0.5, nlevels(psmelt_heatmap$Genus) + 0.5), color = "black", linetype = "solid", linewidth = .1) +
   theme(axis.text.x = element_text(margin = unit(c(0, 0, 0, 0), "mm"), angle = 45, vjust = 1, hjust = 1),
         axis.ticks.y = element_blank(),
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank(),
         panel.border = element_rect(color = "grey25", fill = NA, linewidth = .5),
         strip.background = element_rect(fill = "white", color = "grey25", linewidth = .5),
-        panel.grid.major = element_blank(), 
+        panel.grid.major = element_blank(),
         panel.background = element_blank(),
         panel.spacing.x = unit(2, "lines"),
         plot.margin = margin(0, 0, 0, 0, "pt"),
-        axis.text.y=element_blank(),
+        axis.text.y = element_blank(),
         text = element_text(size = 9),
-        panel.spacing = unit(0.05,'lines'),
+        panel.spacing = unit(0.05, 'lines'),
         legend.position = "bottom",
         legend.title = element_blank(),
-        legend.margin=margin(t = 0, unit='cm'),
-        legend.box.margin=margin(-10,-10,0,0),
+        legend.margin = margin(t = 0, unit = 'cm'),
+        legend.box.margin = margin(-10, -10, 0, 0),
         legend.key.height = unit(.1, 'cm'),
         legend.text = element_text(angle = 0, hjust = 1, vjust = 0.5)
   ) +
   facet_grid(rows = vars(sea_basin), scales = "free", space = "free") +
   ylab("") +
   xlab("") +
-  scale_y_discrete(expand = c(0,0)) +
-  scale_x_discrete(expand = c(0,0)) +
-  # scale_fill_manual(values = c("#1B9E77", "#D95F02", "#7570B3"))
-  scale_fill_viridis(discrete = TRUE, option = "D", alpha = 0.7, na.value = "grey90")
+  scale_y_discrete(expand = c(0, 0)) +
+  scale_x_discrete(expand = c(0, 0)) +
+  scale_fill_manual(
+    values = c(
+      "MB & UM"   = viridis(3, option = "D", alpha = 0.7)[1],
+      "MB only"   = viridis(3, option = "D", alpha = 0.7)[2],
+      "UM only"   = viridis(3, option = "D", alpha = 0.7)[3],
+      "Not found" = "grey90"
+    )
+  )
 
 # Table
 
@@ -275,19 +283,16 @@ table = ggplot(sum, aes(x = Genus, y = Method)) +
   geom_tile(fill = NA, color = "black") +
   geom_text(aes(x = Genus, y = Method, label = n), color = "grey30", size = 2.5) +
   labs(y = "", x = NULL) +
-  facet_grid(rows=vars(label)) +
+  facet_grid(rows = vars(label)) +
   theme_minimal() +
   scale_x_discrete(expand = expansion(mult = c(0, 0))) +
   scale_y_discrete(expand = expansion(mult = c(0, 0))) +
-  theme(axis.line = element_blank(), 
+  theme(axis.line = element_blank(),
         plot.margin = margin(0, 0, 0, 0, "pt"),
-        # panel.grid.major.x = element_line(color = "red",
-        #                                   linewidth = 0.5,
-        #                                   linetype = 2),
         text = element_text(size = 9),
         panel.border = element_rect(color = "grey25", fill = NA, linewidth = .5),
-        axis.text.y=element_text(size = 7, margin = margin(r = 0)),
-        axis.ticks = element_blank(), 
+        axis.text.y = element_text(size = 7, margin = margin(r = 0)),
+        axis.ticks = element_blank(),
         strip.background = element_rect(fill = "white", color = "grey25", linewidth = .5),
         axis.text.x = element_blank(),
         panel.spacing = unit(0, "mm"),
@@ -296,12 +301,12 @@ table = ggplot(sum, aes(x = Genus, y = Method)) +
 heatmap_table = table / heatmap + plot_layout(heights = c(1, 20))
 
 # Save plot
-ggsave("fig4_heatmap.png", 
+ggsave("fig4_heatmap.png",
        width = 5,
        height = 7,
        dpi = 300,
-       plot = heatmap_table, 
-       device = "png", 
+       plot = heatmap_table,
+       device = "png",
        path = "plots/microscopy_vs_barcoding/",
        bg = "white")
 
@@ -315,3 +320,11 @@ ggsave(
   height = 7,
   bg = "white"
 )
+
+ggsave("fig4_heatmap.eps",
+       width = 5,
+       height = 7,
+       plot = heatmap_table,
+       device = cairo_ps,
+       path = "plots/microscopy_vs_barcoding/eps",
+       bg = "white")

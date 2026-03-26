@@ -1,9 +1,10 @@
 library(tidyverse)
 library(ggOceanMaps)
-library(ggOceanMapsData)
+# library(ggOceanMapsData)
 library(sf)
 library(viridis)
-library(inlmisc)
+# library(inlmisc)
+library(ggspatial)
 
 # Define file paths
 station_file <- 'data/everything_from_shark/stations_to_extract.txt'
@@ -11,8 +12,8 @@ shark_salinity_file <- "data/shapefiles/sharkweb_data - 2023-05-22T130134.610.tx
 basins_file <- 'data/shapefiles/sharkweb_shapefiles/Havsomr_SVAR_2016_3b_CP1252.shp'
 
 # Read files
-stations <- read.table(station_file, sep = '\t', header = TRUE)
-shark_salinity <- read.table(shark_salinity_file, sep = '\t', header = TRUE)
+stations <- read.table(station_file, sep = '\t', header = TRUE, fileEncoding = "latin1")
+shark_salinity <- read.table(shark_salinity_file, sep = '\t', header = TRUE, fileEncoding = "latin1")
 basins <- st_read(basins_file)
 
 # Set CRS
@@ -84,33 +85,33 @@ points_sf <- st_as_sf(smhi_salinity, coords = c("lon", "lat"), crs = st_crs(all_
 # Join salinity data with ICES area
 shark_areas_salinity <- st_join(points_sf, all_basins)
 
-salinity_by_area <- smhi_salinity %>% 
+salinity_by_area <- smhi_salinity %>%
   left_join(shark_areas_salinity) %>%
   dplyr::group_by(BASIN_NR) %>%
   summarise(salinity = mean(salinity)) %>%
-  filter(!is.na(BASIN_NR)) 
+  filter(!is.na(BASIN_NR))
 
 # write.table(salinity_by_area, "data/shapefiles/salinty_by_area.txt", sep = "\t", row.names = FALSE)
 
 # Join salinity data with ICES area
-shark_areas <- all_basins %>% 
+shark_areas <- all_basins %>%
   left_join(salinity_by_area)
 
 # Copy value within the Åland sea as we do not have any data from eastern Åland sea
 shark_areas$salinity[5] <- shark_areas$salinity[4]
 
 # Add sea basins to the map
-map <- baltic_sea_map + 
+map <- baltic_sea_map +
   geom_sf(data = st_difference(st_buffer(shark_areas, dist = 1000, nQuadSegs = 1)), aes(fill = salinity), colour = NA, show.legend = TRUE) +
   geom_sf(data = major_basins, fill = NA, colour = NA) +
   geom_sf(data = st_cast(borders, "LINESTRING"), colour = "black", lty = "solid", linewidth = 0.1, lineend = "round")+
   scale_size_identity()
 
 # Make the graticules
-lims <- attributes(map)$limits 
+lims <- attributes(map)$limits
 graticule <- sf::st_graticule(
-  c(lims[1], lims[3], lims[2], lims[4]), 
-  crs = attributes(map)$proj,
+  c(lims[1], lims[3], lims[2], lims[4]),
+  crs = attributes(map)$crs,
   lon = seq(-180, 180, 15),
   lat = seq(-90, 90, 5)
 )
@@ -119,12 +120,12 @@ graticule <- sf::st_graticule(
 lon <- c(9.5, 11.3, 19.1, 19.0, 22.6)
 lat <- c(58.1, 56.9, 56.3, 61.6, 64.5)
 cord <- data.frame(lon, lat)
-cord_sf <- st_as_sf(cord, coords = c("lon", "lat")) 
+cord_sf <- st_as_sf(cord, coords = c("lon", "lat"))
 cord_sf_4326 <- st_set_crs(cord_sf, 4326)
 cord_sf_4326$sea_basin <- c("V", "IV", "III", "II", "I")
 
 # Define a biased color scheme
-cols <- GetColors(256, scheme = "viridis", bias = 2, alpha = 0.8) 
+cols <- colorRampPalette(viridis(256, alpha = 0.8), bias = 2)(256)
 
 # Reorder map and add labels
 reordered_map <- reorder_layers(map) +
@@ -132,7 +133,7 @@ reordered_map <- reorder_layers(map) +
   coord_sf(
     xlim = lims[1:2],
     ylim = lims[3:4],
-    crs = attributes(map)$proj
+    crs = attributes(map)$crs
   ) +
   geom_spatial_text_repel(
     data = stations,

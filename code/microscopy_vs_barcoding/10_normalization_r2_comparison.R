@@ -476,7 +476,10 @@ r2_plot  <- prepare_plot_df(r2_general)
 # Spearman correlation plot
 p1 <- ggplot(cor_plot, aes(x = mc_group, y = mb_label, fill = correlation)) +
   geom_tile(color = "white") +
-  geom_text(aes(label = round(correlation, 2)), size = 4, fontface = "bold") +
+  geom_text(aes(label = round(correlation, 2),
+                color = correlation > 0.6),
+            size = 4, fontface = "bold") +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "white"), guide = "none") +
   scale_fill_viridis(
     direction = -1,
     limits = c(0.4, 0.75),
@@ -497,7 +500,10 @@ p1 <- ggplot(cor_plot, aes(x = mc_group, y = mb_label, fill = correlation)) +
 # R² plot
 p2 <- ggplot(r2_plot, aes(x = mc_group, y = mb_label, fill = r2)) +
   geom_tile(color = "white") +
-  geom_text(aes(label = round(r2, 2)), size = 4, fontface = "bold") +
+  geom_text(aes(label = round(r2, 2),
+                color = r2 > 0.45),
+            size = 4, fontface = "bold") +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "white"), guide = "none") +
   scale_fill_viridis(
     direction = -1,
     limits = c(0, 0.75),
@@ -523,3 +529,5 @@ combined <- p1 + p2 + plot_layout(ncol = 2) +
 combined
 
 ggsave("plots/microscopy_vs_barcoding/Fig8_log.png", combined, width = 8.27, height = 4)
+ggsave("plots/microscopy_vs_barcoding/pdf/Fig8_log.pdf", combined, width = 8.27, height = 4, device = "pdf")
+ggsave("plots/microscopy_vs_barcoding/eps/Fig8_log.eps", combined, width = 8.27, height = 4, device = cairo_ps)

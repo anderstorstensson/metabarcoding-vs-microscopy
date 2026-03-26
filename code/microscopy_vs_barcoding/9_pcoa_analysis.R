@@ -113,6 +113,22 @@ ggsave("fig7_pcoa_carbon.png",
        path = "plots/microscopy_vs_barcoding/",
        bg = "white")
 
+ggsave("fig7_pcoa_carbon.pdf",
+       width = 7,
+       height = 7,
+       plot = plot,
+       device = "pdf",
+       path = "plots/microscopy_vs_barcoding/pdf",
+       bg = "white")
+
+ggsave("fig7_pcoa_carbon.eps",
+       width = 7,
+       height = 7,
+       plot = plot,
+       device = cairo_ps,
+       path = "plots/microscopy_vs_barcoding/eps",
+       bg = "white")
+
 
 plot_ordination(
   physeq = phyloseq_mb,

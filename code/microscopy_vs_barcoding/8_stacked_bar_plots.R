@@ -2,7 +2,7 @@ library(tidyverse)
 library(phyloseq)
 library(cowplot)
 
-phyloseq_file = 'data/18S/phyloseqs.RData' 
+phyloseq_file = 'data/18S/phyloseqs.RData'
 
 # Load phyloseq objects
 load(phyloseq_file)
@@ -67,7 +67,7 @@ psmelt_seqtab %>%
   dplyr::summarise("sum" = sum(Abundance))
 
 # Bind tables and format for plot
-psmelt = rbind(psmelt_abutab, 
+psmelt = rbind(psmelt_abutab,
                psmelt_seqtab,
                psmelt_voltab,
                psmelt_carbtab) %>%
@@ -103,35 +103,35 @@ psmelt(phyloseq_voltab_glom) %>%
 
 # Color palettes
 c23 <- c(
-  "dodgerblue2", 
+  "dodgerblue2",
   "#E31A1C", # red
   "green4",
   "#6A3D9A", # purple
   "#FF7F00", # orange
-  "skyblue2", 
+  "skyblue2",
   "#FB9A99", # lt pink
   "#CAB2D6", # lt purple
   "palegreen2",
   "#FDBF6F", # lt orange
-  "gray70", 
+  "gray70",
   "khaki2",
-  "maroon", 
-  "orchid1", 
-  "deeppink1", 
-  "blue1", 
+  "maroon",
+  "orchid1",
+  "deeppink1",
+  "blue1",
   "steelblue4",
-  "darkturquoise", 
-  "green1", 
-  "yellow4", 
+  "darkturquoise",
+  "green1",
+  "yellow4",
   "yellow3",
-  "darkorange4", 
+  "darkorange4",
   "brown"
 )
 
 # Plot
 relative_abundance.p = ggplot(psmelt, aes(x = fct_reorder(basin_name, as.numeric(sea_basin)), y = Abundance, fill = Class)) +
-  geom_bar(position="stack", 
-           stat="identity", 
+  geom_bar(position="stack",
+           stat="identity",
            color = "black",
            linewidth = 0.25) +
   theme_bw() +
@@ -171,6 +171,14 @@ ggsave(
   bg = "white"
 )
 
+ggsave("fig6_classes_abundance.eps",
+       width = 8,
+       height = 5,
+       plot = relative_abundance.p,
+       device = cairo_ps,
+       path = "plots/microscopy_vs_barcoding/eps",
+       bg = "white")
+
 # Save table
 psmelt_table <- psmelt %>%
   mutate(method = gsub("\n", "", method))
@@ -181,8 +189,8 @@ write_tsv(psmelt_table, "Fig6.txt")
 
 # Melt tables and select stations for seasonal plot
 psmelt_abutab_season = psmelt(phyloseq_abutab_glom) %>%
-  filter(station_name == "SL\x80GG\x85" | station_name == "B7" | station_name == "B1") %>%
-  mutate(station_name = gsub("SL\x80GG\x85", "Släggö", station_name)) %>%
+  filter(station_name == "SLÄGGÖ" | station_name == "B7" | station_name == "B1") %>%
+  mutate(station_name = gsub("SLÄGGÖ", "Släggö", station_name)) %>%
   mutate(station_name = gsub("B7", "B3 / B7", station_name)) %>%
   # dplyr::group_by(Class_MB, sea_basin) %>%
   # dplyr::summarise("Abundance" = mean(Abundance)) %>%
@@ -191,8 +199,8 @@ psmelt_abutab_season = psmelt(phyloseq_abutab_glom) %>%
   select(-station_date, -Flagellates, -Unicell)
 
 psmelt_voltab_season = psmelt(phyloseq_voltab_glom) %>%
-  filter(station_name == "SL\x80GG\x85" | station_name == "B7" | station_name == "B1") %>%
-  mutate(station_name = gsub("SL\x80GG\x85", "Släggö", station_name)) %>%
+  filter(station_name == "SLÄGGÖ" | station_name == "B7" | station_name == "B1") %>%
+  mutate(station_name = gsub("SLÄGGÖ", "Släggö", station_name)) %>%
   mutate(station_name = gsub("B7", "B3 / B7", station_name)) %>%
   # dplyr::group_by(Class_MB, sea_basin) %>%
   # dplyr::summarise("Abundance" = mean(Abundance)) %>%
@@ -201,8 +209,8 @@ psmelt_voltab_season = psmelt(phyloseq_voltab_glom) %>%
   select(-station_date, -Flagellates, -Unicell)
 
 psmelt_carbtab_season = psmelt(phyloseq_carbtab_glom) %>%
-  filter(station_name == "SL\x80GG\x85" | station_name == "B7" | station_name == "B1") %>%
-  mutate(station_name = gsub("SL\x80GG\x85", "Släggö", station_name)) %>%
+  filter(station_name == "SLÄGGÖ" | station_name == "B7" | station_name == "B1") %>%
+  mutate(station_name = gsub("SLÄGGÖ", "Släggö", station_name)) %>%
   mutate(station_name = gsub("B7", "B3 / B7", station_name)) %>%
   # dplyr::group_by(Class_MB, sea_basin) %>%
   # dplyr::summarise("Abundance" = mean(Abundance)) %>%
@@ -211,8 +219,8 @@ psmelt_carbtab_season = psmelt(phyloseq_carbtab_glom) %>%
   select(-station_date, -Flagellates, -Unicell)
 
 psmelt_seqtab_season = psmelt(phyloseq_seqtab_glom) %>%
-  filter(station_name == "SL\x80GG\x85" | station_name == "B7" | station_name == "B1") %>%
-  mutate(station_name = gsub("SL\x80GG\x85", "Släggö", station_name)) %>%
+  filter(station_name == "SLÄGGÖ" | station_name == "B7" | station_name == "B1") %>%
+  mutate(station_name = gsub("SLÄGGÖ", "Släggö", station_name)) %>%
   mutate(station_name = gsub("B7", "B3 / B7", station_name)) %>%
   mutate(method = "Metabarcoding:\nread counts") %>%
   select(names(psmelt_abutab_season))
@@ -229,8 +237,8 @@ psmelt_season = rbind(
 
 # Plot
 season.p = ggplot(psmelt_season, aes(x = sampling_date, y = Abundance, fill = Class)) +
-  geom_bar(position="stack", 
-           stat="identity", 
+  geom_bar(position="stack",
+           stat="identity",
            color = "black",
            linewidth = 0.25) +
   theme_bw() +
@@ -251,10 +259,10 @@ season.p = ggplot(psmelt_season, aes(x = sampling_date, y = Abundance, fill = Cl
   xlab("")
 
 # Save plot
-ggsave("figX_classes_season.png", 
+ggsave("figX_classes_season.png",
        width = 10,
        height = 5,
-       plot = season.p, 
-       device = "png", 
+       plot = season.p,
+       device = "png",
        path = "plots/microscopy_vs_barcoding/",
        bg = "white")
