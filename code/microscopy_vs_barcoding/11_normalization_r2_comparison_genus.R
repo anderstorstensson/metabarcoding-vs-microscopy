@@ -517,7 +517,10 @@ plot_data$Genus <- factor(plot_data$Genus, levels = rev(levels(plot_data$Genus))
 # ---- 6. Plotting ----
 p1 <- ggplot(cor_genus_plot, aes(x = mc_group, y = Genus, fill = correlation)) +
   geom_tile(color = "white") +
-  geom_text(aes(label = round(correlation, 2)), size = 2.5, fontface = "bold") +
+  geom_text(aes(label = round(correlation, 2),
+                color = correlation > 0.6),
+            size = 2.5, fontface = "bold") +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "white"), guide = "none") +
   facet_wrap(~mb_label, ncol = 4) +
   scale_fill_viridis(direction = -1, limits = c(0, 1), name = "Spearman correlation",
                      guide = guide_colorbar(direction = "horizontal",
@@ -550,7 +553,10 @@ labels_vec <- ifelse(
 
 p2 <- ggplot(plot_data, aes(x = mc_group, y = Genus, fill = r2)) +
   geom_tile(color = "white") +
-  geom_text(aes(label = round(r2, 2)), size = 2.5, fontface = "bold") +
+  geom_text(aes(label = round(r2, 2),
+                color = r2 > 0.45),
+            size = 2.5, fontface = "bold") +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "white"), guide = "none") +
   facet_wrap(~mb_label, ncol = 4) +
   scale_y_discrete(labels = parse(text = labels_vec)) +           # <- use these labels
   scale_fill_viridis(direction = -1, limits = c(0, 1), name = expression(R^2),
