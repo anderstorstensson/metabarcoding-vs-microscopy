@@ -4,6 +4,7 @@ library(viridis)
 library(cowplot)
 library(phyloseq)
 library(patchwork)
+library(ggrastr)
 
 phyloseq_file = 'data/18S/phyloseqs.RData'
 
@@ -239,9 +240,15 @@ psmelt_heatmap %>%
   summarise(n = n()) %>%
   mutate(percent = n/sum(n)*100)
 
+# Blend viridis colors with white to replicate the appearance of alpha = 0.7 on white background
+viridis_on_white <- {
+  cols <- col2rgb(viridis(3, option = "D")) / 255
+  apply(cols, 2, function(x) rgb(0.7 * x[1] + 0.3, 0.7 * x[2] + 0.3, 0.7 * x[3] + 0.3))
+}
+
 # Plot heatmap
 heatmap <- ggplot(psmelt_heatmap, aes(Genus, sample_name, label = season)) +
-  geom_tile(aes(fill = Presence)) +
+  rasterise(geom_tile(aes(fill = Presence)), dpi = 600) +
   geom_vline(xintercept = seq(0.5, nlevels(psmelt_heatmap$Genus) + 0.5), color = "black", linetype = "solid", linewidth = .1) +
   theme(axis.text.x = element_text(margin = unit(c(0, 0, 0, 0), "mm"), angle = 45, vjust = 1, hjust = 1),
         axis.ticks.y = element_blank(),
@@ -270,9 +277,9 @@ heatmap <- ggplot(psmelt_heatmap, aes(Genus, sample_name, label = season)) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_fill_manual(
     values = c(
-      "MB & UM"   = viridis(3, option = "D", alpha = 0.7)[1],
-      "MB only"   = viridis(3, option = "D", alpha = 0.7)[2],
-      "UM only"   = viridis(3, option = "D", alpha = 0.7)[3],
+      "MB & UM"   = viridis_on_white[1],
+      "MB only"   = viridis_on_white[2],
+      "UM only"   = viridis_on_white[3],
       "Not found" = "grey90"
     )
   )
@@ -315,7 +322,7 @@ ggsave(
   plot = heatmap_table,
   path = "plots/microscopy_vs_barcoding/pdf",
   filename = "fig4_heatmap.pdf",
-  device = "pdf",
+  device = cairo_pdf,
   width = 5,
   height = 7,
   bg = "white"

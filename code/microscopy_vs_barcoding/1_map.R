@@ -5,6 +5,7 @@ library(sf)
 library(viridis)
 # library(inlmisc)
 library(ggspatial)
+library(ggrastr)
 
 # Define file paths
 station_file <- 'data/everything_from_shark/stations_to_extract.txt'
@@ -102,7 +103,7 @@ shark_areas$salinity[5] <- shark_areas$salinity[4]
 
 # Add sea basins to the map
 map <- baltic_sea_map +
-  geom_sf(data = st_difference(st_buffer(shark_areas, dist = 1000, nQuadSegs = 1)), aes(fill = salinity), colour = NA, show.legend = TRUE) +
+  rasterise(geom_sf(data = st_difference(st_buffer(shark_areas, dist = 1000, nQuadSegs = 1)), aes(fill = salinity), colour = NA, show.legend = TRUE), dpi = 600) +
   geom_sf(data = major_basins, fill = NA, colour = NA) +
   geom_sf(data = st_cast(borders, "LINESTRING"), colour = "black", lty = "solid", linewidth = 0.1, lineend = "round")+
   scale_size_identity()
@@ -124,8 +125,12 @@ cord_sf <- st_as_sf(cord, coords = c("lon", "lat"))
 cord_sf_4326 <- st_set_crs(cord_sf, 4326)
 cord_sf_4326$sea_basin <- c("V", "IV", "III", "II", "I")
 
-# Define a biased color scheme
-cols <- colorRampPalette(viridis(256, alpha = 0.8), bias = 2)(256)
+# Define a biased color scheme, then blend with white to replicate alpha = 0.5 on white background
+cols <- colorRampPalette(viridis(256), bias = 2)(256)
+cols <- {
+  rgb_matrix <- col2rgb(cols) / 255
+  apply(rgb_matrix, 2, function(x) rgb(0.5 * x[1] + 0.5, 0.5 * x[2] + 0.5, 0.5 * x[3] + 0.5))
+}
 
 # Reorder map and add labels
 reordered_map <- reorder_layers(map) +
@@ -156,7 +161,7 @@ reordered_map <- reorder_layers(map) +
   #   na.value = "white",
   #   alpha = 0.5
   # ) +
-  scale_fill_gradientn(colours = alpha(cols, 0.5),
+  scale_fill_gradientn(colours = cols,
                        name = "Salinity\n(psu)",
                        na.value = "white",
                        # limits = c(0, 30),
@@ -198,7 +203,7 @@ ggsave(
   plot = reordered_map,
   path = "plots/microscopy_vs_barcoding/pdf",
   filename = "fig_1_map.pdf",
-  device = "pdf",
+  device = cairo_pdf,
   width = 7,
   height = 7,
   bg = "white"
@@ -208,7 +213,7 @@ ggsave(
   plot = reordered_map,
   path = "plots/microscopy_vs_barcoding/eps",
   filename = "fig_1_map.eps",
-  device = "eps",
+  device = cairo_ps,
   width = 7,
   height = 7,
   bg = "white"
